@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "dou-sort-comments",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "dou-sort-comments plugin aims to sort all parent and child comments on a DOU topics (http://dou.ua/).",
+    "description": "The description of the application"
+  }
+}
