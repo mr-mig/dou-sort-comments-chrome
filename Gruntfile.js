@@ -95,13 +95,15 @@ module.exports = function (grunt) {
             chrome: {
             },
             dist: {
-                files: [{
-                    dot: true,
-                    src: [
-                        '<%= config.dist %>/*',
-                        '!<%= config.dist %>/.git*'
-                    ]
-                }]
+                files: [
+                    {
+                        dot: true,
+                        src: [
+                            '<%= config.dist %>/*',
+                            '!<%= config.dist %>/.git*'
+                        ]
+                    }
+                ]
             }
         },
 
@@ -130,8 +132,8 @@ module.exports = function (grunt) {
         // Automatically inject Bower components into the HTML file
         bowerInstall: {
             app: {
-                src: [ 
-                     '<%= config.app %>/*.html'
+                src: [
+                    '<%= config.app %>/*.html'
                 ]
             }
         },
@@ -161,23 +163,27 @@ module.exports = function (grunt) {
         // The following *-min tasks produce minifies files in the dist folder
         imagemin: {
             dist: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= config.app %>/images',
-                    src: '{,*/}*.{gif,jpeg,jpg,png}',
-                    dest: '<%= config.dist %>/images'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= config.app %>/images',
+                        src: '{,*/}*.{gif,jpeg,jpg,png}',
+                        dest: '<%= config.dist %>/images'
+                    }
+                ]
             }
         },
 
         svgmin: {
             dist: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= config.app %>/images',
-                    src: '{,*/}*.svg',
-                    dest: '<%= config.dist %>/images'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= config.app %>/images',
+                        src: '{,*/}*.svg',
+                        dest: '<%= config.dist %>/images'
+                    }
+                ]
             }
         },
 
@@ -193,12 +199,14 @@ module.exports = function (grunt) {
                     // removeEmptyAttributes: true,
                     // removeOptionalTags: true
                 },
-                files: [{
-                    expand: true,
-                    cwd: '<%= config.app %>',
-                    src: '*.html',
-                    dest: '<%= config.dist %>'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= config.app %>',
+                        src: '*.html',
+                        dest: '<%= config.dist %>'
+                    }
+                ]
             }
         },
 
@@ -230,20 +238,22 @@ module.exports = function (grunt) {
         // Copies remaining files to places other tasks can use
         copy: {
             dist: {
-                files: [{
-                    expand: true,
-                    dot: true,
-                    cwd: '<%= config.app %>',
-                    dest: '<%= config.dist %>',
-                    src: [
-                        '*.{ico,png,txt}',
-                        'images/{,*/}*.{webp,gif}',
-                        '{,*/}*.html',
-                        'styles/{,*/}*.css',
-                        'styles/fonts/{,*/}*.*',
-                        '_locales/{,*/}*.json',
-                    ]
-                }]
+                files: [
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: '<%= config.app %>',
+                        dest: '<%= config.dist %>',
+                        src: [
+                            '*.{ico,png,txt}',
+                            'images/{,*/}*.{webp,gif}',
+                            '{,*/}*.html',
+                            'styles/{,*/}*.css',
+                            'styles/fonts/{,*/}*.*',
+                            '_locales/{,*/}*.json',
+                        ]
+                    }
+                ]
             }
         },
 
@@ -282,12 +292,14 @@ module.exports = function (grunt) {
                 options: {
                     archive: 'package/dou-sort-comments<%= config.manifest.version %>.zip'
                 },
-                files: [{
-                    expand: true,
-                    cwd: 'dist/',
-                    src: ['**'],
-                    dest: ''
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['**'],
+                        dest: ''
+                    }
+                ]
             }
         }
     });
