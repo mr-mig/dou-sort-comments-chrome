@@ -42,8 +42,13 @@ function sort(desc) {
     }).appendTo('#commentsList');
 }
 
-function fixIcon(desc) {
+function fixIcon(desc, initialStateChanged) {
     var btnElement = $('#' + btnId);
+
+    if (!initialStateChanged) {
+        btnElement.removeClass('btn-comments-sorter-mid');
+    }
+
     if (desc) {
         btnElement.removeClass('btn-comments-sorter-desc').addClass('btn-comments-sorter-asc');
     } else {
@@ -53,13 +58,15 @@ function fixIcon(desc) {
 
 window.addEventListener('load', function () {
     var desc = true;
+    var initialStateChanged = false;
 
-    $('div.fixed-menu').append('<a class="btn-comments-sorter btn-comments-sorter-asc" id="' + btnId + '" href="javascript:;"><span>' + btnMessage + '</span></a>');
+    $('div.fixed-menu').append('<a class="btn-comments-sorter btn-comments-sorter-mid" id="' + btnId + '" href="javascript:;"><span>' + btnMessage + '</span></a>');
 
     var sortFn = debounce(function () {
         sort(desc);
         desc = !desc;
-        fixIcon(desc);
+        fixIcon(desc, initialStateChanged);
+        initialStateChanged = true;
     }, 300);
 
     var link = document.getElementById(btnId);
