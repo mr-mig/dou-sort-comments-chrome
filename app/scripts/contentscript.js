@@ -54,8 +54,7 @@ function fixIcon(desc) {
 window.addEventListener('load', function () {
     var desc = true;
 
-    $('div.fixed-menu').append('<a id="' + btnId + '" href="javascript:;"><span>' + btnMessage + '</span></a>');
-    $('#' + btnId).addClass("btn-comments-sorter btn-comments-sorter-asc");
+    $('div.fixed-menu').append('<a class="btn-comments-sorter btn-comments-sorter-asc" id="' + btnId + '" href="javascript:;"><span>' + btnMessage + '</span></a>');
 
     var sortFn = debounce(function () {
         sort(desc);
