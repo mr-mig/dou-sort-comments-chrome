@@ -4,6 +4,8 @@ var btnId = 'btnCommentsSorter';
 var btnMessage = 'Отсортировать комментарии';
 var expandCommentsLinksSelector = 'a.expand-thread';
 var commentsSelector = '[class*="b-comment level-"]';
+var desc = true;
+var initialStateChanged = false;
 
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
@@ -57,20 +59,20 @@ function fixIcon(desc, initialStateChanged) {
 }
 
 window.addEventListener('load', function () {
-    var desc = true;
-    var initialStateChanged = false;
-
     $('div.fixed-menu').append('<a class="btn-comments-sorter btn-comments-sorter-mid" id="' + btnId + '" href="javascript:;"><span>' + btnMessage + '</span></a>');
-
-    var sortFn = debounce(function () {
-        sort(desc);
-        desc = !desc;
-        fixIcon(desc, initialStateChanged);
-        initialStateChanged = true;
-    }, 300);
 
     var link = document.getElementById(btnId);
     link.addEventListener('click', function () {
-        sortFn();
+        chrome.extension.sendRequest({'action': 'sort_click'}, function (response) {
+//                var sortFn = debounce(function () {
+//                    sort(desc);
+//                    desc = !desc;
+//                    fixIcon(desc, initialStateChanged);
+//                    initialStateChanged = true;
+//                }, 300);
+//
+//            sortFn();
+            sort();
+        });
     });
 });
