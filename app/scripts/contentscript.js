@@ -25,7 +25,6 @@ var $expandLinks = $$('.thread-comments');
 var $commentsList = $('#commentsList');
 var $comments = $$('[class*="b-comment level-"]', $commentsList);
 var $collapsedComments = $$(collapsedCommentsSelector, $commentsList);
-var $commentsListParent = $commentsList.parentNode;
 var $bestComments = $('.__best');
 var desc = true;
 var btnTpl = '<a class="btn-comments-sorter btn-comments-sorter-mid" id="' + btnId.substr(1) + '" href="javascript:;"><span>' + btnMessage + '</span></a>';
@@ -38,32 +37,22 @@ function addBtn() {
     return span.querySelector('a');
 }
 
+function detach() {
+    function remove(el) {
+        $commentsList.removeChild(el);
+    }
 
-function hideList() {
-    // detach list to prevent reflow and repaint browser events
-    // this is a perfomance tuning
-    $commentsList.remove();
+    $comments.forEach(remove);
 }
 
-function showList() {
-    // attach list back
-    // will be used after sorting
-
-    // you can try to use `$commentsList.hide()`
-    // and `$commentsList.show()` instead to compare the gain
-
-    // note: measure this in chrome console using the profiles,
-    // as reflow and repaint are not JS-related
-    $commentsListParent.appendChild($commentsList);
-}
 
 function prepareSort(){
+    function bindHash(el) {
+        el._hash = parseInt(el.querySelector('.comment-link').hash.substring(1));
+    }
+
     // prepare data - cache predicate #hash value
     $comments.forEach(bindHash);
-}
-
-function bindHash(el){
-    el._hash = parseInt(el.querySelector('.comment-link').hash.substring(1));
 }
 
 function sort(desc) {
@@ -79,11 +68,27 @@ function sort(desc) {
     console.timeEnd('sort');
 }
 
-function appendBack(el){
+function appendBack(){
     console.time('append');
-
+    var batchFactor = 50;
     var append = $commentsList.appendChild.bind($commentsList);
-    $comments.forEach(append);
+    // preserve scroll
+    var initialScroll = window.scrollY;
+
+    // copy array
+//    var appendables = $comments.slice(0);
+
+    var start = 0;
+    var partialAppend = function () {
+        for (var i = start; i < start + batchFactor; i++) {
+            if ($comments[i]) append($comments[i]);
+        }
+        start += batchFactor;
+        if($comments.length > start) raf(partialAppend);
+    };
+
+    partialAppend();
+    window.scrollTo(0, initialScroll);
 
     console.timeEnd('append');
 }
@@ -122,12 +127,12 @@ function fixIcon(desc) {
 function sortFn() {
     console.time('fullsort');
 
-    hideList();
+    // detach elements instead of parent
+    detach();
     sort(desc);
     appendBack();
     desc = !desc;
     fixIcon(desc);
-    showList();
 
     console.timeEnd('fullsort');
 }
