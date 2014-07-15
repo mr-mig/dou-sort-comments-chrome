@@ -4,6 +4,7 @@ var btnId = '#btnCommentsSorter';
 var btnMessage = 'Отсортировать комментарии';
 var collapsedCommentsSelector = '.ct-hidden';
 var $ = document.querySelector.bind(document);
+var raf = requestAnimationFrame.bind(window);
 
 // select all items using query
 // and convert it to Array
@@ -76,15 +77,15 @@ function sort(desc) {
     });
 
     console.timeEnd('sort');
-
-    console.time('append');
-    $comments.forEach(appendBack);
-    console.timeEnd('append');
-
 }
 
 function appendBack(el){
-    $commentsList.appendChild(el);
+    console.time('append');
+
+    var append = $commentsList.appendChild.bind($commentsList);
+    $comments.forEach(append);
+
+    console.timeEnd('append');
 }
 
 function hide(el){
@@ -123,6 +124,7 @@ function sortFn() {
 
     hideList();
     sort(desc);
+    appendBack();
     desc = !desc;
     fixIcon(desc);
     showList();
