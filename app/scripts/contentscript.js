@@ -56,17 +56,23 @@ function showList() {
     $commentsListParent.appendChild($commentsList);
 }
 
+function prepareSort(){
+    // prepare data - cache predicate #hash value
+    $comments.forEach(bindHash);
+}
+
+function bindHash(el){
+    el._hash = parseInt(el.querySelector('.comment-link').hash.substring(1));
+}
+
 function sort(desc) {
     console.time('sort');
 
     $comments.sort(function (first, second) {
-        var firstId = parseInt(first.querySelector('.comment-link').hash.substring(1));
-        var secondId = parseInt(second.querySelector('.comment-link').hash.substring(1));
+        var firstId = first._hash;
+        var secondId = second._hash;
 
-        if (!desc) {
-            return (firstId > secondId) ? 1 : (firstId < secondId) ? -1 : 0;
-        }
-        return (firstId > secondId) ? -1 : (firstId < secondId) ? 1 : 0;
+        return desc ? (secondId - firstId) : (firstId - secondId);
     });
 
     console.timeEnd('sort');
@@ -116,7 +122,6 @@ function sortFn() {
     console.time('fullsort');
 
     hideList();
-    expandAllThreads();
     sort(desc);
     desc = !desc;
     fixIcon(desc);
@@ -125,4 +130,12 @@ function sortFn() {
     console.timeEnd('fullsort');
 }
 
+// this will run on first button click
+function runOnce(){
+    expandAllThreads();
+    prepareSort();
+    $btn.removeEventListener('click', runOnce);
+}
+
+$btn.addEventListener('click', runOnce, false);
 $btn.addEventListener('click', sortFn, false);
