@@ -3,21 +3,40 @@
 var btnId = '#btnCommentsSorter';
 var btnMessage = 'Отсортировать комментарии';
 var collapsedCommentsSelector = '.ct-hidden';
+var $ = document.querySelector.bind(document);
+
+// select all items using query
+// and convert it to Array
+function $$(query, root){
+    var root = root || document;
+    var nl = root.querySelectorAll(query);
+    var arr = [];
+    // optimized
+    for (var i = nl.length; i--; arr.unshift(nl[i]));
+    return arr;
+}
 
 
 // all elements are available when script is loaded
 // this is extension-specific lifecycle
 // so it is very handy to precache all elements
-var $expandLinks = $('.thread-comments');
+var $expandLinks = $$('.thread-comments');
 var $commentsList = $('#commentsList');
-var $comments = $commentsList.find('[class*="b-comment level-"]');
-var $collapsedComments = $commentsList.find(collapsedCommentsSelector);
-var $commentsListParent = $commentsList.parent();
+var $comments = $$('[class*="b-comment level-"]', $commentsList);
+var $collapsedComments = $$(collapsedCommentsSelector, $commentsList);
+var $commentsListParent = $commentsList.parentNode;
 var $bestComments = $('.__best');
 var desc = true;
+var btnTpl = '<a class="btn-comments-sorter btn-comments-sorter-mid" id="' + btnId.substr(1) + '" href="javascript:;"><span>' + btnMessage + '</span></a>';
+var $btn = addBtn();
 
-// Good idea is to move the template to a separate file
-var $btn = $('<a class="btn-comments-sorter btn-comments-sorter-mid" id="' + btnId.substr(1) + '" href="javascript:;"><span>' + btnMessage + '</span></a>');
+function addBtn() {
+    var span = document.createElement('span');
+    span.innerHTML = btnTpl;
+    $('div.fixed-menu').appendChild(span);
+    return span.querySelector('a');
+}
+
 
 function hideList() {
     // detach list to prevent reflow and repaint browser events
@@ -34,18 +53,13 @@ function showList() {
 
     // note: measure this in chrome console using the profiles,
     // as reflow and repaint are not JS-related
-    $commentsListParent.append($commentsList);
+    $commentsListParent.appendChild($commentsList);
 }
 
 function sort(desc) {
     console.time('sort');
 
     $comments.sort(function (first, second) {
-        // var firstId = parseInt($(first).find('.comment-link').attr('href').substring(1));
-        // var secondId = parseInt($(second).find('.comment-link').attr('href').substring(1));
-
-        // uncomment the lines above to compare the performance of wrapping all elements with $()
-        // it is 4x slower!
         var firstId = parseInt(first.querySelector('.comment-link').hash.substring(1));
         var secondId = parseInt(second.querySelector('.comment-link').hash.substring(1));
 
@@ -53,34 +67,46 @@ function sort(desc) {
             return (firstId > secondId) ? 1 : (firstId < secondId) ? -1 : 0;
         }
         return (firstId > secondId) ? -1 : (firstId < secondId) ? 1 : 0;
-    }).appendTo($commentsList);
+    });
 
     console.timeEnd('sort');
+
+    console.time('append');
+    $comments.forEach(appendBack);
+    console.timeEnd('append');
+
 }
 
+function appendBack(el){
+    $commentsList.appendChild(el);
+}
+
+function hide(el){
+    el.style.display = 'none';
+}
+
+function removeHiddenClass(el){
+    el.classList.remove(collapsedCommentsSelector.substr(1));
+}
 
 // this function was a hotspot
 function expandAllThreads() {
-    console.time('expandAll');
-
-    $bestComments.hide();
-    $collapsedComments.each(function () {
-        this.classList.remove(collapsedCommentsSelector.substr(1));
-    });
-    $expandLinks.hide();
-
-    console.timeEnd('expandAll');
+    hide($bestComments);
+    $collapsedComments.forEach(removeHiddenClass);
+    $expandLinks.forEach(hide);
 }
 
 function fixIcon(desc) {
     // no need for additional parameter
     // removeClass will not throw error if there is no class
-    $btn.removeClass('btn-comments-sorter-mid');
+    $btn.classList.remove('btn-comments-sorter-mid');
 
     if (desc) {
-        $btn.removeClass('btn-comments-sorter-desc').addClass('btn-comments-sorter-asc');
+        $btn.classList.remove('btn-comments-sorter-desc');
+        $btn.classList.add('btn-comments-sorter-asc');
     } else {
-        $btn.removeClass('btn-comments-sorter-asc').addClass('btn-comments-sorter-desc');
+        $btn.classList.remove('btn-comments-sorter-asc');
+        $btn.classList.add('btn-comments-sorter-desc');
     }
 }
 
@@ -90,8 +116,6 @@ function sortFn() {
     console.time('fullsort');
 
     hideList();
-
-    // run expand only once
     expandAllThreads();
     sort(desc);
     desc = !desc;
@@ -101,5 +125,4 @@ function sortFn() {
     console.timeEnd('fullsort');
 }
 
-$('div.fixed-menu').append($btn);
-$btn.on('click', sortFn);
+$btn.addEventListener('click', sortFn, false);
